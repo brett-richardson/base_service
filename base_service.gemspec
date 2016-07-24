@@ -16,6 +16,8 @@ Gem::Specification.new do |s|
   s.add_dependency 'activesupport', '~> 4.0'
 
 	s.add_development_dependency 'bundler'
+	s.add_development_dependency 'rspec'
+	s.add_development_dependency 'rspec-its'
 	s.add_development_dependency 'rake'
 	s.add_development_dependency 'guard'
 	s.add_development_dependency 'guard-rspec'
