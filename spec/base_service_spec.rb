@@ -29,6 +29,12 @@ describe BaseService do
       it "returns a success result" do
         expect(subject.call).to eq "success result"
       end
+
+      it "yields a matcher to a block if passed" do
+        subject.call do |args|
+          expect(args.result).to eq "success result"
+        end
+      end
     end
 
     describe "an instance that runs unsuccessfully" do

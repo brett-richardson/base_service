@@ -4,6 +4,8 @@ BaseService
 The client should extend this module, in order to implement this common
 service object pattern.
 
+### Advanced Syntax
+
 ```ruby
 
 MyService.new(param1, param2).call do |on|
@@ -16,7 +18,19 @@ end
 
 ```
 
-## Support for legacy behaviour
+### Semi-Advanced Syntax
+
+```ruby
+
+MyService.new(param1, param2).call do |on|
+  puts "Result: #{on.result}"
+end
+
+```
+
+## Support for (depreacted) legacy behaviour
+
+No command-query separation. :(
 
 ```ruby
 

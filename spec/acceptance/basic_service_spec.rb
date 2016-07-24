@@ -48,4 +48,56 @@ RSpec.describe "Creating a basic service object" do
     result = instance.call
     expect(result).to eq "no param2"
   end
+
+  specify "Using the service with a simple block" do
+    step "I initialize my service correctly"
+    instance = MyService.new(1, 2)
+
+    step "I can call the #call method with a block..."
+    step "...and the success case evaluates it with the result"
+    side_effect = double
+    expect(side_effect).to receive(:update!).with "success!"
+    instance.call { |on| side_effect.update! on.result }
+
+    step "When my service is set up to fail"
+    instance = MyService.new(1, nil)
+
+    step "the failure raises an exception, which can be caught from the block"
+    expect { instance.call { |on| on.result } }.to raise_error MyService::Failure
+  end
+
+  specify "Using the service with complex result matchers" do
+    step "I initialize my service correctly"
+    instance = MyService.new(1, 2)
+
+    step "The block passed to the success matcher is called"
+    side_effect = double
+    expect(side_effect).to receive(:update!).with "success!"
+
+    instance.call do |on|
+      on.success { |result| side_effect.update! result }
+    end
+
+    step "The blocks passed to any failure matchers are not called"
+    expect(side_effect).to_not receive :destroy
+    instance.call do |on|
+      on.failure { |result| side_effect.destroy result }
+      on.failure(:abc) { |result| side_effect.destroy result }
+    end
+
+    step "I initialize my service set to fail with code :param2_error"
+    instance = MyService.new(1, nil)
+
+    step "The block passed to the success block is not called..."
+    side_effect = double
+    expect(side_effect).to_not receive :update!
+
+    step "...but the failure block is called"
+    expect(side_effect).to receive(:destroy).with "no param2"
+
+    instance.call do |on|
+      on.success { |result| side_effect.update! result }
+      on.failure { |error| side_effect.destroy error }
+    end
+  end
 end
