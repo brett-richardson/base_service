@@ -7,7 +7,7 @@ Gem::Specification.new do |s|
 	s.description  = 'Template for service objects in ruby'
 	s.version      =  BaseService::VERSION
 	s.date         = '2016-06-24'
-	s.homepage     = 'http://www.mebrett.com'
+	s.homepage     = 'https://github.com/brett-richardson/base_service'
 	s.authors      = ['Brett Richardson']
   s.email        = ['brett.richardson.nz@gmail.com']
 	s.require_path = 'lib'

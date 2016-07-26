@@ -1,8 +1,4 @@
 language: ruby
-script: bundle exec rake
-
-env:
-  - CI=true
-
 rvm:
-  - "2.2.3"
+ - 2.1.0
+ - 2.2.3
