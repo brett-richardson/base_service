@@ -1,8 +1,8 @@
 module BaseService
   class Failure < RuntimeError
-    def initialize(service_class, result)
+    def initialize(service, result)
       @result = result
-      super "#{service_class} failed"
+      super "#{service.class} failed"
     end
 
     attr_reader :result

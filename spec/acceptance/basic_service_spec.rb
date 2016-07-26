@@ -100,4 +100,21 @@ RSpec.describe "Creating a basic service object" do
       on.failure { |error| side_effect.destroy error }
     end
   end
+
+  specify "Using failure codes" do
+    step "I create a service that will fail with code :param1_error"
+    instance = MyService.new(nil, 2)
+
+    step "My generic failure block is not called"
+    side_effect = double
+    expect(side_effect).to_not receive :generic_failure
+
+    step "My error-code specfic block is called"
+    expect(side_effect).to receive(:param1_error_happened).with "no param1"
+
+    instance.call do |on|
+      on.failure { |result| side_effect.generic_failure result }
+      on.failure(:param1_error) { |result| side_effect.param1_error_happened result }
+    end
+  end
 end

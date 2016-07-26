@@ -3,14 +3,22 @@ require 'base_service/matcher'
 
 RSpec.describe BaseService::Matcher do
   subject(:instance) { described_class.new service }
-  let(:service) { double result: result, was_success?: was_success? }
+  let(:service) { double result: result, was_success?: was_success?, failure_code: failure_code }
   let(:was_success?) { true }
   let(:result) { "yay!" }
+  let(:failure_code) { nil }
+
+  describe "#resolve" do
+    it("runs") { instance.resolve }
+  end
 
   describe "#success" do
     context "when the service was successful" do
       it "yields the result" do
-        expect { |b| subject.success &b }.to yield_with_args result
+        expect do |b|
+          subject.success &b
+          subject.resolve
+        end.to yield_with_args result
       end
     end
 
@@ -34,16 +42,27 @@ RSpec.describe BaseService::Matcher do
       let(:was_success?) { false }
 
       it "does yields the result" do
-        expect { |b| subject.failure &b }.to yield_with_args result
+        expect do |b|
+          subject.failure &b
+          subject.resolve
+        end.to yield_with_args result
       end
-    end
-  end
 
-  describe "#failure_handled?" do
-    it "is false until the failure method is called" do
-      expect(instance.failure_handled?).to eq false
-      instance.failure
-      expect(instance.failure_handled?).to eq true
+      context "when called with a failure code" do
+        context "the code matches" do
+          let(:side_effect) { double }
+          let(:failure_code) { :specific_failure_code }
+
+          it "yields to the failure block with the code, and no others" do
+            expect(side_effect).to receive :call
+
+            subject.failure { raise 'hell' }
+            subject.success { raise 'more hell' }
+            subject.failure(failure_code) { side_effect.call }
+            subject.resolve
+          end
+        end
+      end
     end
   end
 end

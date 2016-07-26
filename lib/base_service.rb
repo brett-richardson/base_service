@@ -10,18 +10,19 @@ module BaseService
     if block_given?
       self.matcher = Matcher.new self
       yield matcher
+      matcher.resolve
       raise Failure.new(self, result) unless was_success? || failure_handled?
     end
 
     result
   end
 
-  attr_reader :result, :was_success
+  attr_reader :result, :was_success, :failure_code
   alias was_success? was_success
 
   private
 
-  attr_writer :was_success, :result
+  attr_writer :was_success, :result, :failure_code
   attr_accessor :matcher
   delegate :failure_handled?, to: :matcher
 
@@ -33,6 +34,7 @@ module BaseService
   def failure(result, code = nil)
     self.was_success = false
     self.result = result
+    self.failure_code = code
   end
 end
 

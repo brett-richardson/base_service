@@ -9,7 +9,7 @@ class DummyClass
 
   def perform
     return success "success result" unless @should_fail
-    return failure "failure result"
+    return failure "failure result", :code_123
   end
 end
 
@@ -37,11 +37,23 @@ describe BaseService do
       end
     end
 
-    describe "an instance that runs unsuccessfully" do
+    describe "#failure_code" do
+      it "is nil unless there was a failure" do
+        subject.call
+        expect(subject.failure_code).to be_nil
+      end
+    end
+
+    context "an instance that runs unsuccessfully" do
       let(:should_fail) { true }
 
       it "returns a failure result" do
         expect(subject.call).to eq "failure result"
+      end
+
+      it "sets the failure code" do
+        subject.call
+        expect(subject.failure_code).to eq :code_123
       end
     end
   end
