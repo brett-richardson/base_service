@@ -1,8 +1,7 @@
 module BaseService
   class Matcher
     def initialize(service)
-      @service, @success_handled, @failure_handled = service, false, false
-      @specific_failure_blocks = {}
+      @service, @specific_failure_blocks = service, {}
     end
 
     def success(&block)
@@ -18,16 +17,12 @@ module BaseService
     end
 
     def resolve
-      if was_success?
-        generic_success_block.call result if generic_success_block.present?
-      else
-        appropriate_failure_block.call result
-      end
+      return appropriate_failure_block.call result if !was_success?
+      generic_success_block.call result if generic_success_block.present?
     end
 
     attr_reader :service, :specific_failure_blocks
-    attr_accessor :failure_handled, :generic_success_block, :generic_failure_block
-    alias failure_handled? failure_handled
+    attr_accessor :generic_success_block, :generic_failure_block
     delegate :result, :was_success?, :failure_code, to: :service
 
     def failure_handled?
@@ -39,7 +34,7 @@ module BaseService
     end
 
     def raise_failure_not_handled
-      raise Failure.new(service, result)
+      raise Failure.new(service, result, failure_code)
     end
   end
 end

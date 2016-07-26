@@ -11,7 +11,6 @@ module BaseService
       self.matcher = Matcher.new self
       yield matcher
       matcher.resolve
-      raise Failure.new(self, result) unless was_success? || failure_handled?
     end
 
     result
@@ -24,7 +23,6 @@ module BaseService
 
   attr_writer :was_success, :result, :failure_code
   attr_accessor :matcher
-  delegate :failure_handled?, to: :matcher
 
   def success(result)
     self.was_success = true
